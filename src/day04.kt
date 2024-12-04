@@ -28,8 +28,23 @@ fun part1(grid: Grid2D<Char>): Int {
     return xmasSequences
 }
 
-fun part2(data: Grid2D<Char>): Int {
-    return 0
+fun part2(grid: Grid2D<Char>): Int {
+    val aPositions = grid.getPositions()
+        .filter { it.el == 'A' }
+        .toList()
+    var xmasCrosses = 0
+    for (aPos in aPositions) {
+        val nw = grid.getAdjacentValue(aPos, Direction.NW)
+        val ne = grid.getAdjacentValue(aPos, Direction.NE)
+        val sw = grid.getAdjacentValue(aPos, Direction.SW)
+        val se = grid.getAdjacentValue(aPos, Direction.SE)
+        val masDiagonal1 = (nw == 'M' && se == 'S') || (nw == 'S' && se == 'M')
+        val masDiagonal2 = (ne == 'M' && sw == 'S') || (ne == 'S' && sw == 'M')
+        if (masDiagonal1 && masDiagonal2) {
+            xmasCrosses++
+        }
+    }
+    return xmasCrosses
 }
 
 
@@ -37,7 +52,7 @@ fun main() {
     val input = File("inputs/day04.txt").readText()
     val data = preProcessData(input)
     val answer1 = part1(data)
-    println("Answer 1: $answer1") // ANSWER
+    println("Answer 1: $answer1") // 2517
     val answer2 = part2(data)
-    println("Answer 2: $answer2") // ANSWER
+    println("Answer 2: $answer2") // 1960
 }
