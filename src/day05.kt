@@ -14,10 +14,10 @@ data class OrderRule(val page: Int, val before: Int) {
 data class PageSeq(val pages: List<Int>) {
     fun getMiddlePageNumber(): Int = pages[pages.size / 2]
 
-    fun isValidForRules(inverseRules: Map<Int, Set<Int>>): Boolean {
+    fun isValidForRules(orderRuleMap: Map<Int, Set<Int>>): Boolean {
         val numbersBeen = mutableSetOf<Int>()
         for (page in pages) {
-            val mustBeBefore = inverseRules[page]
+            val mustBeBefore = orderRuleMap[page]
             if (mustBeBefore != null) {
                 if (mustBeBefore.intersect(numbersBeen).isNotEmpty()) {
                     println("$page: invalid because of the intersection ${mustBeBefore.intersect(numbersBeen)}")
@@ -27,6 +27,27 @@ data class PageSeq(val pages: List<Int>) {
             numbersBeen += page
         }
         return true
+    }
+
+    fun patchSequence(orderRuleMap: Map<Int, Set<Int>>): PageSeq {
+        val numbersBeen = mutableSetOf<Int>()
+        for ((index, page) in pages.withIndex()) {
+            val mustBeBefore = orderRuleMap[page]
+            if (mustBeBefore != null) {
+                val intersection = mustBeBefore.intersect(numbersBeen)
+                if (intersection.isNotEmpty()) {
+                    println("$page: invalid because of the intersection $intersection")
+                    val newPages = pages.subList(0, index+1).stream().filter { !intersection.contains(it) }.toList().toMutableList()
+                    newPages += intersection.toList()
+                    newPages += pages.subList(index + 1, pages.size)
+                    val newSeq = PageSeq(newPages)
+                    return newSeq
+                }
+            }
+            numbersBeen += page
+        }
+        return this
+
     }
 
     companion object {
@@ -70,7 +91,20 @@ fun part1(orderRules: List<OrderRule>, pageSequences: List<PageSeq>): Int {
 }
 
 fun part2(orderRules: List<OrderRule>, pageSequences: List<PageSeq>): Int {
-    return 0
+    val orderRuleMap: Map<Int, Set<Int>> = getOrderRuleMap(orderRules)
+    val invalidSequences = pageSequences.filter { !it.isValidForRules(orderRuleMap) }
+    var middleNumberSum = 0
+    for (invalidSeq in invalidSequences) {
+        println("Checking sequence $invalidSeq")
+        var newSeq = invalidSeq.patchSequence(orderRuleMap)
+        println("New sequence $newSeq")
+        while (!newSeq.isValidForRules(orderRuleMap)) {
+            newSeq = newSeq.patchSequence(orderRuleMap)
+            println("Newer sequence $newSeq")
+        }
+        middleNumberSum += newSeq.getMiddlePageNumber()
+    }
+    return middleNumberSum
 }
 
 
@@ -80,5 +114,5 @@ fun main() {
     val answer1 = part1(rules, pages)
     println("Answer 1: $answer1") // 5064
     val answer2 = part2(rules, pages)
-    println("Answer 2: $answer2") // ANSWER
+    println("Answer 2: $answer2") // 5152
 }
