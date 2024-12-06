@@ -94,6 +94,8 @@ fun main() {
     val (rules, pages) = preProcessData(input)
     val answer1 = part1(rules, pages)
     println("Answer 1: $answer1") // 5064
+    assert(answer1 == 5064)
     val answer2 = part2(rules, pages)
     println("Answer 2: $answer2") // 5152
+    assert(answer2 == 5152)
 }

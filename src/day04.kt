@@ -53,6 +53,8 @@ fun main() {
     val data = preProcessData(input)
     val answer1 = part1(data)
     println("Answer 1: $answer1") // 2517
+    assert(answer1 == 2517)
     val answer2 = part2(data)
     println("Answer 2: $answer2") // 1960
+    assert(answer2 == 1960)
 }
