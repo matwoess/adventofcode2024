@@ -19,7 +19,7 @@ fun part1(grid: Grid2D<Char>): Int {
     var xmasSequences = 0
     for (xPos in xPositions) {
         for (dir in Direction.entries) {
-            val dirSeq = grid.getDirectionalSequence(xPos, dir)
+            val dirSeq = grid.getDirectionalValueSequence(xPos, dir)
             if (sequenceStartsWith(dirSeq, "XMAS")) {
                 xmasSequences++
             }

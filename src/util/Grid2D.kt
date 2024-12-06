@@ -40,7 +40,7 @@ class Grid2D<T>(input: String, elemDelimiter: String) {
         return row in 0..<height && col in 0..<width
     }
 
-    fun getDirectionalSequence(pos: Position<T>, dir: Direction): Sequence<T> {
+    fun getDirectionalValueSequence(pos: Position<T>, dir: Direction): Sequence<T> {
         var currX = pos.col
         var currY = pos.row
         val (xOffset, yOffset) = dir.directionalOffset()
@@ -52,6 +52,20 @@ class Grid2D<T>(input: String, elemDelimiter: String) {
             }
         }
     }
+
+    fun getDirectionalPositionSequence(pos: Position<T>, dir: Direction): Sequence<Position<T>> {
+        var currX = pos.col
+        var currY = pos.row
+        val (xOffset, yOffset) = dir.directionalOffset()
+        return sequence {
+            while (isValidPosition(currY, currX)) {
+                yield(Position(currY, currX, array[currY][currX]))
+                currX += xOffset
+                currY += yOffset
+            }
+        }
+    }
+
 
     fun getAdjacentValue(pos: Position<T>, dir: Direction): T? {
         val (xOffset, yOffset) = dir.directionalOffset()
