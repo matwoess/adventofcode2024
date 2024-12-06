@@ -17,6 +17,24 @@ fun turnRight(curDir: Direction) = when (curDir) {
     else -> throw IllegalArgumentException("Invalid start direction")
 }
 
+fun Grid2D<Char>.toStringWithHighlight(highlightedPos: Position<Char>): String {
+    val(highlightRow, highlightCol) = highlightedPos.row to highlightedPos.col
+    val printString = this.toString()
+
+    val builder: StringBuilder = StringBuilder()
+    for ((i, row) in printString.split("\r\n").withIndex()) {
+        for ((j, col) in row.split(" ").withIndex()) {
+            if (i == highlightRow && j == highlightCol) {
+                builder.append("\u001B[31m@\u001B[0m") // print red @ instead
+            } else {
+                builder.append(col)
+            }
+        }
+        builder.append("\r\n")
+    }
+    return builder.toString()
+}
+
 fun part1(grid: Grid2D<Char>): Int {
     var guardPos = grid.getPositions()
         .filter { it.el == '^' }
@@ -44,24 +62,6 @@ fun part1(grid: Grid2D<Char>): Int {
 
 fun part2(grid: Grid2D<Char>): Int {
     return 0
-}
-
-fun Grid2D<Char>.toStringWithHighlight(highlightedPos: Position<Char>): String {
-    val(highlightRow, highlightCol) = highlightedPos.row to highlightedPos.col
-    val printString = this.toString()
-
-    val builder: StringBuilder = StringBuilder()
-    for ((i, row) in printString.split("\r\n").withIndex()) {
-        for ((j, col) in row.split(" ").withIndex()) {
-            if (i == highlightRow && j == highlightCol) {
-                builder.append("\u001B[31m@\u001B[0m") // print red @ instead
-            } else {
-                builder.append(col)
-            }
-        }
-        builder.append("\r\n")
-    }
-    return builder.toString()
 }
 
 
