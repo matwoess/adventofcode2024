@@ -18,7 +18,7 @@ fun turnRight(curDir: Direction) = when (curDir) {
 }
 
 fun Grid2D<Char>.toStringWithHighlight(highlightedPos: Position<Char>): String {
-    val(highlightRow, highlightCol) = highlightedPos.row to highlightedPos.col
+    val (highlightRow, highlightCol) = highlightedPos.row to highlightedPos.col
     val printString = this.toString()
 
     val builder: StringBuilder = StringBuilder()
@@ -49,7 +49,7 @@ fun part1(grid: Grid2D<Char>): Int {
             .toList()
         visited.addAll(newVisited.toSet())
         guardPos = newVisited.last()
-        println(grid.toStringWithHighlight(guardPos))
+        //println(grid.toStringWithHighlight(guardPos))
         val nextChar = grid.getAdjacentValue(guardPos, curDir)
         if (nextChar == null) {
             break
@@ -60,10 +60,44 @@ fun part1(grid: Grid2D<Char>): Int {
     return visited.size
 }
 
-fun part2(grid: Grid2D<Char>): Int {
-    return 0
-}
+fun part2(originalGrid: Grid2D<Char>): Int {
+    val originalGuardPos = originalGrid.getPositions()
+        .filter { it.el == '^' }
+        .first()
 
+    var loops = 0
+    // brute force all possible positions to add 'O' and check for loops
+    for (p in originalGrid.getPositions().filter { it.el == '.' }) {
+        print("Checking with additional 'O' at $p\r")
+        val grid = originalGrid.copyWithModification(p, 'O')
+        val visited = mutableSetOf(originalGuardPos)
+        var curDir = Direction.N
+        var guardPos = originalGuardPos
+        var iteration = 0
+        while (true) {
+            iteration++
+            if (iteration >= 500) {
+                //println("Loop found")
+                loops++
+                break
+            }
+            val curSeq = grid.getDirectionalPositionSequence(guardPos, curDir)
+            val newVisited = curSeq.toList().stream()
+                .takeWhile { it.el == '.' || it.el == '^' }
+                .toList()
+            visited.addAll(newVisited.toSet())
+            guardPos = newVisited.last()
+            val nextChar = grid.getAdjacentValue(guardPos, curDir)
+            if (nextChar == null) {
+                //println("No loop")
+                break
+            } else if (nextChar == '#' || nextChar == 'O') {
+                curDir = turnRight(curDir)
+            }
+        }
+    }
+    return loops
+}
 
 fun main() {
     val input = File("inputs/day06.txt").readText()
@@ -72,5 +106,6 @@ fun main() {
     println("Answer 1: $answer1") // 5208
     assert(answer1 == 5208)
     val answer2 = part2(data)
-    println("Answer 2: $answer2") // ANSWER
+    println("Answer 2: $answer2") // 1972
+    assert(answer2 == 1972)
 }

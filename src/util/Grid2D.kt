@@ -1,9 +1,9 @@
 package util
 
 class Grid2D<T>(input: String, elemDelimiter: String) {
-    private val array: MutableList<MutableList<T>> = mutableListOf()
-    private val height: Int
-    private val width: Int
+    private var array: MutableList<MutableList<T>> = mutableListOf()
+    private var height: Int
+    private var width: Int
 
     init {
         val lines = input.lines()
@@ -16,6 +16,12 @@ class Grid2D<T>(input: String, elemDelimiter: String) {
             }
             array += row
         }
+        width = array[0].size
+    }
+
+    private constructor(array: MutableList<MutableList<T>>) : this("", "") {
+        this.array = array
+        height = array.size
         width = array[0].size
     }
 
@@ -75,5 +81,11 @@ class Grid2D<T>(input: String, elemDelimiter: String) {
             return null
         }
         return array[y][x]
+    }
+
+    fun copyWithModification(modifyPosition: Position<Char>, newValue: T): Grid2D<T> {
+        val newArray = array.map { it.toMutableList() }.toMutableList()
+        newArray[modifyPosition.row][modifyPosition.col] = newValue
+        return Grid2D(newArray)
     }
 }
